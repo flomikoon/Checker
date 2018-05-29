@@ -19,7 +19,7 @@ public class Cell extends Rectangle {
         this.checker = checker;
     }
 
-    public Cell(boolean white, int x, int y) {
+    Cell(boolean white, int x, int y) {
         setWidth(Main.CELL_SIZE);
         setHeight(Main.CELL_SIZE);
 

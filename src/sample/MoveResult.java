@@ -13,11 +13,11 @@ public class MoveResult {
         return checker;
     }
 
-    public MoveResult(MoveType type) {
+    MoveResult(MoveType type) {
         this(type, null);
     }
 
-    public MoveResult(MoveType type, Checker checker) {
+    MoveResult(MoveType type, Checker checker) {
         this.type = type;
         this.checker = checker;
     }

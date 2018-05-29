@@ -1,21 +1,29 @@
 package sample;
 
 import javafx.application.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.*;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Button;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.*;
+
 
 
 public class Main extends Application {
 
     public static final int CELL_SIZE = 100;
-    public static final int WIDTH = 8;
-    public static final int HEIGHT = 8;
+    private static final int WIDTH = 8;
+    private static final int HEIGHT = 8;
 
     private Cell[][] board = new Cell[WIDTH][HEIGHT];
 
     private Group cellGroup = new Group();
     private Group checkerGroup = new Group();
+
+    private int xod = 0;
+
 
     private Parent createContent() {
         Pane root = new Pane();
@@ -32,7 +40,7 @@ public class Main extends Application {
                 Checker checker = null;
 
                 if (y <= 2 && (x + y) % 2 != 0) {
-                    checker = makeCheker(CheckerType.RED, x, y);
+                    checker = makeCheker(CheckerType.BLACK, x, y);
                 }
 
                 if (y >= 5 && (x + y) % 2 != 0) {
@@ -62,13 +70,17 @@ public class Main extends Application {
         int count = 0;
         int countcr = 0;
 
-        boolean dam = (board[x0][y0].getChecker().getType() == CheckerType.REDQUEEN
+        boolean dam = (board[x0][y0].getChecker().getType() == CheckerType.BLACKQUEEN
                 || board[x0][y0].getChecker().getType() == CheckerType.WHITEQUEEN)
                 && (Math.abs(x0 - newX) == Math.abs(y0 - newY));
 
-        if (Math.abs(newX - x0) == 1 && newY - y0 == checker.getType().checkerType) {
+        if (Math.abs(newX - x0) == 1 && newY - y0 == checker.getType().checkerType &&
+                (checker.getType() == CheckerType.WHITE && xod == 0 ||
+                        checker.getType() == CheckerType.BLACK && xod == 1 )) {
             return new MoveResult(MoveType.YES);
-        } else if (Math.abs(newX - x0) == 2 && Math.abs(newY - y0) == Math.abs(checker.getType().checkerType * 2)) {
+        } else if (Math.abs(newX - x0) == 2 && Math.abs(newY - y0) == Math.abs(checker.getType().checkerType * 2) &&
+                (checker.getType() == CheckerType.WHITE && xod == 0 ||
+                        checker.getType() == CheckerType.BLACK && xod == 1 )) {
 
             int x1 = x0 + (newX - x0) / 2;
             int y1 = y0 + (newY - y0) / 2;
@@ -76,7 +88,9 @@ public class Main extends Application {
             if (board[x1][y1].hasChecker() && board[x1][y1].getChecker().getType() != checker.getType()) {
                 return new MoveResult(MoveType.KILL, board[x1][y1].getChecker());
             }
-        } else if (dam){
+        } else if (dam &&
+                (checker.getType() == CheckerType.WHITEQUEEN && xod == 0 ||
+                        checker.getType() == CheckerType.BLACKQUEEN && xod == 1 )){
 
             while (p != toBoard(checker.getOldY()) && l != toBoard(checker.getOldX())){
                 if (board[l][p].hasChecker() && board[l][p].getChecker().getType() != checker.getType() && (Math.abs(l - newX) == Math.abs(p - newY))) {
@@ -84,8 +98,13 @@ public class Main extends Application {
                     x0 = l;
                     y0 = p;
                 }
-                if ((checker.getType() == CheckerType.REDQUEEN && board[l][p].hasChecker() && board[l][p].getChecker().getType() == CheckerType.RED )||
-                       (checker.getType() == CheckerType.WHITEQUEEN && board[l][p].hasChecker() && board[l][p].getChecker().getType() == CheckerType.WHITE)){
+
+                if ((checker.getType() == CheckerType.BLACKQUEEN && board[l][p].hasChecker() &&
+                        (board[l][p].getChecker().getType() == CheckerType.BLACK ||
+                                board[l][p].getChecker().getType() == CheckerType.BLACKQUEEN))||
+                       (checker.getType() == CheckerType.WHITEQUEEN && board[l][p].hasChecker() &&
+                               (board[l][p].getChecker().getType() == CheckerType.WHITE ||
+                                       board[l][p].getChecker().getType() == CheckerType.WHITEQUEEN))){
                     countcr++;
                 }
 
@@ -124,6 +143,7 @@ public class Main extends Application {
     private Checker makeCheker(CheckerType type, int x, int y) {
         Checker checker = new Checker(type, x, y);
 
+
         checker.setOnMouseReleased(e -> {
             int newX = toBoard(checker.getLayoutX());
             int newY = toBoard(checker.getLayoutY());
@@ -139,32 +159,49 @@ public class Main extends Application {
             int x0 = toBoard(checker.getOldX());
             int y0 = toBoard(checker.getOldY());
 
+
+
             switch (result.getType()) {
                 case NO:
                     checker.noMove();
                     break;
                 case YES:
-                    if (newY == HEIGHT -1 ){
+                    if (newY == HEIGHT -1 && type == CheckerType.BLACK ){
                         checker.removeTypeR();
                     }
-                    if (newY == 0){
+                    if (newY == 0 && type == CheckerType.WHITE){
                         checker.removeTypeW();
+                    }
+                    if (type == CheckerType.WHITE){
+                        xod++;
+                    } else {
+                        xod--;
                     }
                     checker.go(newX, newY);
                     board[x0][y0].setChecker(null);
                     board[newX][newY].setChecker(checker);
                     break;
                 case YESQUEEN:
+                    if (type == CheckerType.WHITEQUEEN){
+                        xod++;
+                    } else {
+                        xod--;
+                    }
                     checker.go(newX, newY);
                     board[x0][y0].setChecker(null);
                     board[newX][newY].setChecker(checker);
                     break;
                 case KILL:
-                    if (newY == HEIGHT -1 ){
+                    if (newY == HEIGHT -1 && type == CheckerType.BLACK ){
                         checker.removeTypeR();
                     }
-                    if (newY == 0){
+                    if (newY == 0 && type == CheckerType.WHITE){
                         checker.removeTypeW();
+                    }
+                    if (type == CheckerType.WHITE){
+                        xod++;
+                    } else {
+                        xod--;
                     }
                     checker.go(newX, newY);
                     board[x0][y0].setChecker(null);
@@ -176,6 +213,11 @@ public class Main extends Application {
                     break;
 
                 case KILLQUEEN:
+                    if (type == CheckerType.WHITEQUEEN){
+                        xod++;
+                    } else {
+                        xod--;
+                    }
                     checker.go(newX, newY);
                     board[x0][y0].setChecker(null);
                     board[newX][newY].setChecker(checker);
@@ -191,10 +233,20 @@ public class Main extends Application {
         return checker;
     }
 
-    public void start(Stage primaryStage) throws Exception {
-        Scene scene = new Scene(createContent());
+
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("Checkers");
+        FlowPane root = new FlowPane( 10 , 10);
+        Scene scene = new Scene(root , 400 , 400);
         primaryStage.setScene(scene);
+        Button btn = new Button("Играть");
+        root.setAlignment(Pos.CENTER);
+        BackgroundFill dk = new BackgroundFill(Color.BLACK , new CornerRadii(1) , Insets.EMPTY);
+        root.setBackground(new Background(dk));
+        Button btn1 = new Button("Выход");
+        btn.setOnAction(event -> primaryStage.setScene(new Scene(createContent())));
+        btn1.setOnAction(event -> primaryStage.close());
+        root.getChildren().addAll(btn , btn1);
         primaryStage.show();
     }
     public static void main(String[] args) {
