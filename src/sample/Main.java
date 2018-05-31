@@ -58,12 +58,64 @@ public class Main extends Application {
     }
 
     private MoveResult tryMove(Checker checker, int newX, int newY) {
-        if (board[newX][newY].hasChecker() || (newX + newY) % 2 == 0) {
-            return new MoveResult(MoveType.NO);
-        }
 
         int x0 = toBoard(checker.getOldX());
         int y0 = toBoard(checker.getOldY());
+
+        boolean sc = false;
+        int d = 0;
+
+        for (int h = 0; h < HEIGHT; h++) {
+            for (int w = 0; w < WIDTH; w++) {
+                boolean a1 = h + 1 < 8 && w + 1 < 8 && board[h + 1][w + 1].hasChecker() &&
+                        board[h][w].hasChecker() && h + 2 < 8 && w + 2 < 8 &&
+                        board[h][w].getChecker().getType() != board[h + 1][w + 1].getChecker().getType() &&
+                        !board[h + 2][w + 2].hasChecker();//&& newX == h + 2 && newY == w + 2;
+
+                boolean a2 = h + 1 < 8 && w - 1 >= 0 && board[h + 1][w - 1].hasChecker() &&
+                        board[h][w].hasChecker() && h + 2 < 8 && w - 2 >= 0 &&
+                        board[h][w].getChecker().getType() != board[h + 1][w - 1].getChecker().getType() &&
+                        !board[h + 2][w - 2].hasChecker();//&&  newX == h + 2 && newY == w - 2;
+
+                boolean a3 = h - 1 >= 0 && w + 1 < 8 && board[h - 1][w + 1].hasChecker() &&
+                        board[h][w].hasChecker() && h - 2 >= 0 && w + 2 < 8 &&
+                        board[h][w].getChecker().getType() != board[h - 1][w + 1].getChecker().getType() &&
+                        !board[h - 2][w + 2].hasChecker();// &&  newX == h - 2 && newY == w + 2;
+
+                boolean a4 = h - 1 >= 0 && w - 1 >= 0 && board[h - 1][w - 1].hasChecker() &&
+                        board[h][w].hasChecker() && h - 2 >= 0 && w - 2 >= 0 &&
+                        board[h][w].getChecker().getType() != board[h - 1][w - 1].getChecker().getType() &&
+                        !board[h - 2][w - 2].hasChecker(); //&& newX == h - 2 && newY == w - 2;
+
+                if (a1 || a2 || a3 || a4) {
+                    if (newX == h + 2 && newY == w + 2 && h + 2 < 8 && w + 2 < 8 && x0 == h && y0 == w) {
+                        sc = true;
+                        d = 0;
+                    } else if (newX == h + 2 && newY == w - 2 && h + 2 < 8 && w - 2 >= 0 && x0 == h && y0 == w) {
+                        sc = true;
+                        d = 0;
+                    } else if (newX == h - 2 && newY == w + 2 && h - 2 >= 0 && w + 2 < 8 && x0 == h && y0 == w) {
+                        sc = true;
+                        d = 0;
+                    } else if (newX == h - 2 && newY == w - 2 && h - 2 >= 0 && w - 2 >= 0 && x0 == h && y0 == w) {
+                        sc = true;
+                        d = 0;
+                    }
+                    d++;
+                }
+
+                if (sc) {
+                    break;
+                }
+            }
+            if (sc) {
+                break;
+            }
+        }
+
+        if (board[newX][newY].hasChecker() || (newX + newY) % 2 == 0 || (!sc && d != 0)) {
+            return new MoveResult(MoveType.NO);
+        }
 
         int l = newX;
         int p = newY;
@@ -161,6 +213,7 @@ public class Main extends Application {
 
 
 
+
             switch (result.getType()) {
                 case NO:
                     checker.noMove();
@@ -198,11 +251,29 @@ public class Main extends Application {
                     if (newY == 0 && type == CheckerType.WHITE){
                         checker.removeTypeW();
                     }
-                    if (type == CheckerType.WHITE){
+
+                    boolean a1 = newX - 1 >= 0 && newY - 1 >= 0 && board[newX - 1][newY - 1].hasChecker()
+                            && board[newX - 1][newY - 1].getChecker().getType() != checker.getType() &&
+                            newX - 2 >= 0 && newY - 2 >= 0 && !board[newX - 2][newY - 2].hasChecker();
+
+                    boolean a2 = newX - 1 >= 0 && newY + 1 < 8 && board[newX - 1][newY + 1].hasChecker()
+                            && board[newX - 1][newY + 1].getChecker().getType() != checker.getType() &&
+                            newX - 2 >= 0 && newY + 2 < 8 && !board[newX - 2][newY + 2].hasChecker();
+
+                    boolean a3 = newX + 1 < 8 && newY - 1 > 0 && board[newX + 1][newY - 1].hasChecker()
+                            && board[newX + 1][newY - 1].getChecker().getType() != checker.getType() &&
+                            newX + 2 < 8 && newY - 2 >= 0 && !board[newX + 2][newY - 2].hasChecker();
+
+                    boolean a4 = newX + 1 < 8 && newY + 1 < 8 && board[newX + 1][newY + 1].hasChecker()
+                            && board[newX + 1][newY + 1].getChecker().getType() != checker.getType() &&
+                            newX + 2 < 8 && newY + 2 < 8 && !board[newX + 2][newY + 2].hasChecker();
+
+                    if (type == CheckerType.WHITE && !a4 && !a1 && !a2 && !a3) {
                         xod++;
-                    } else {
+                    } else if (!a4 && !a1 && !a2 && !a3) {
                         xod--;
                     }
+
                     checker.go(newX, newY);
                     board[x0][y0].setChecker(null);
                     board[newX][newY].setChecker(checker);
@@ -213,11 +284,7 @@ public class Main extends Application {
                     break;
 
                 case KILLQUEEN:
-                    if (type == CheckerType.WHITEQUEEN){
-                        xod++;
-                    } else {
-                        xod--;
-                    }
+
                     checker.go(newX, newY);
                     board[x0][y0].setChecker(null);
                     board[newX][newY].setChecker(checker);
@@ -225,10 +292,16 @@ public class Main extends Application {
                     otherChecker = result.getChecker();
                     board[toBoard(otherChecker.getOldX())][toBoard(otherChecker.getOldY())].setChecker(null);
                     checkerGroup.getChildren().remove(otherChecker);
+
+                    if (type == CheckerType.WHITEQUEEN) {
+                        xod--;
+                    } else {
+                        xod++;
+                    }
+
                     break;
             }
         });
-
 
         return checker;
     }
