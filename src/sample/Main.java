@@ -118,6 +118,68 @@ public class Main extends Application {
                         break;
                     }
                 }
+
+                int one = 1;
+                int two = 2;
+                boolean a1;
+                boolean a2;
+                boolean a3;
+                boolean a4;
+                while (one < 7 && two < 6) {
+                    if (board[h][w].hasChecker() && (board[h][w].getChecker().getType() == CheckerType.WHITEQUEEN ||
+                            board[h][w].getChecker().getType() == CheckerType.BLACKQUEEN)) {
+                        a1 = h + one < 8 && w + one < 8 && board[h + one][w + one].hasChecker() &&
+                                ((board[h][w].getChecker().getType() == CheckerType.BLACKQUEEN && xod != 0 ||
+                                        board[h][w].getChecker().getType() == CheckerType.WHITEQUEEN && xod != 1)) &&
+                                board[h][w].hasChecker() && h + two < 8 && w + two < 8 &&
+                                board[h][w].getChecker().getType() != board[h + one][w + one].getChecker().getType() &&
+                                !board[h + two][w + two].hasChecker();
+
+                        a2 = h + one < 8 && w - one >= 0 && board[h + one][w - one].hasChecker() &&
+                                ((board[h][w].getChecker().getType() == CheckerType.BLACKQUEEN && xod != 0 ||
+                                        board[h][w].getChecker().getType() == CheckerType.WHITEQUEEN && xod != 1)) &&
+                                board[h][w].hasChecker() && h + two < 8 && w - two >= 0 &&
+                                board[h][w].getChecker().getType() != board[h + one][w - one].getChecker().getType() &&
+                                !board[h + two][w - two].hasChecker();
+
+                        a3 = h - one >= 0 && w + one < 8 && board[h - one][w + one].hasChecker() &&
+                                ((board[h][w].getChecker().getType() == CheckerType.BLACKQUEEN && xod != 0 ||
+                                        board[h][w].getChecker().getType() == CheckerType.WHITEQUEEN && xod != 1)) &&
+                                board[h][w].hasChecker() && h - two >= 0 && w + two < 8 &&
+                                board[h][w].getChecker().getType() != board[h - one][w + one].getChecker().getType() &&
+                                !board[h - two][w + two].hasChecker();
+
+                        a4 = h - one >= 0 && w - one >= 0 && board[h - one][w - one].hasChecker() &&
+                                ((board[h][w].getChecker().getType() == CheckerType.BLACKQUEEN && xod != 0 ||
+                                        board[h][w].getChecker().getType() == CheckerType.WHITEQUEEN && xod != 1)) &&
+                                board[h][w].hasChecker() && h - two >= 0 && w - two >= 0 &&
+                                board[h][w].getChecker().getType() != board[h - one][w - one].getChecker().getType() &&
+                                !board[h - two][w - two].hasChecker();
+
+                        if (a1 || a2 || a3 || a4) {
+                            if (newX == h + two && newY == w + two && h + two < 8 && w + two < 8 && x0 == h && y0 == w) {
+                                sc = true;
+                                d = 0;
+                            } else if (newX == h + two && newY == w - two && h + two < 8 && w - two >= 0 && x0 == h && y0 == w) {
+                                sc = true;
+                                d = 0;
+                            } else if (newX == h - two && newY == w + two && h - two >= 0 && w + two < 8 && x0 == h && y0 == w) {
+                                sc = true;
+                                d = 0;
+                            } else if (newX == h - two && newY == w - two && h - two >= 0 && w - two >= 0 && x0 == h && y0 == w) {
+                                sc = true;
+                                d = 0;
+                            }
+                            d++;
+                        }
+
+                        if (sc) {
+                            break;
+                        }
+                    }
+                    one++;
+                    two++;
+                }
             }
 
             if (sc) {
