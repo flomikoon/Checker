@@ -156,21 +156,25 @@ public class Main extends Application {
                                 board[h][w].getChecker().getType() != board[h - one][w - one].getChecker().getType() &&
                                 !board[h - two][w - two].hasChecker();
 
-                        if (a1 || a2 || a3 || a4) {
-                            if (newX == h + two && newY == w + two && h + two < 8 && w + two < 8 && x0 == h && y0 == w) {
-                                sc = true;
-                                d = 0;
-                            } else if (newX == h + two && newY == w - two && h + two < 8 && w - two >= 0 && x0 == h && y0 == w) {
-                                sc = true;
-                                d = 0;
-                            } else if (newX == h - two && newY == w + two && h - two >= 0 && w + two < 8 && x0 == h && y0 == w) {
-                                sc = true;
-                                d = 0;
-                            } else if (newX == h - two && newY == w - two && h - two >= 0 && w - two >= 0 && x0 == h && y0 == w) {
-                                sc = true;
-                                d = 0;
+                        int twocopy = two;
+                        while (twocopy < 6 && !sc) {
+                            if (a1 || a2 || a3 || a4) {
+                                if (newX == h + twocopy && newY == w + twocopy && h + twocopy < 8 && w + twocopy < 8 && x0 == h && y0 == w) {
+                                    sc = true;
+                                    d = 0;
+                                } else if (newX == h + twocopy && newY == w - twocopy && h + twocopy < 8 && w - twocopy >= 0 && x0 == h && y0 == w) {
+                                    sc = true;
+                                    d = 0;
+                                } else if (newX == h - twocopy && newY == w + twocopy && h - twocopy >= 0 && w + twocopy < 8 && x0 == h && y0 == w) {
+                                    sc = true;
+                                    d = 0;
+                                } else if (newX == h - twocopy && newY == w - twocopy && h - twocopy >= 0 && w - twocopy >= 0 && x0 == h && y0 == w) {
+                                    sc = true;
+                                    d = 0;
+                                }
+                                d++;
                             }
-                            d++;
+                            twocopy++;
                         }
 
                         if (sc) {
