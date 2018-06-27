@@ -161,7 +161,6 @@ public class Main extends Application {
                                                 board[h + one][w + one].getChecker().getType() == CheckerType.WHITE ||
                                                         board[h + one][w + one].getChecker().getType() == CheckerType.WHITEQUEEN)) &&
                                 !board[h + two][w + two].hasChecker();
-
                         a2 = h + one < 8 && w - one >= 0 && board[h + one][w - one].hasChecker() &&
                                 ((board[h][w].getChecker().getType() == CheckerType.BLACKQUEEN && xod != 0 ||
                                         board[h][w].getChecker().getType() == CheckerType.WHITEQUEEN && xod != 1)) &&
@@ -173,7 +172,6 @@ public class Main extends Application {
                                                 board[h + one][w - one].getChecker().getType() == CheckerType.WHITE ||
                                                         board[h + one][w - one].getChecker().getType() == CheckerType.WHITEQUEEN)) &&
                                 !board[h + two][w - two].hasChecker();
-
                         a3 = h - one >= 0 && w + one < 8 && board[h - one][w + one].hasChecker() &&
                                 ((board[h][w].getChecker().getType() == CheckerType.BLACKQUEEN && xod != 0 ||
                                         board[h][w].getChecker().getType() == CheckerType.WHITEQUEEN && xod != 1)) &&
@@ -185,7 +183,6 @@ public class Main extends Application {
                                                 board[h - one][w + one].getChecker().getType() == CheckerType.WHITE ||
                                                         board[h - one][w + one].getChecker().getType() == CheckerType.WHITEQUEEN)) &&
                                 !board[h - two][w + two].hasChecker();
-
                         a4 = h - one >= 0 && w - one >= 0 && board[h - one][w - one].hasChecker() &&
                                 ((board[h][w].getChecker().getType() == CheckerType.BLACKQUEEN && xod != 0 ||
                                         board[h][w].getChecker().getType() == CheckerType.WHITEQUEEN && xod != 1)) &&
@@ -197,11 +194,11 @@ public class Main extends Application {
                                                 board[h - one][w - one].getChecker().getType() == CheckerType.WHITE ||
                                                         board[h - one][w - one].getChecker().getType() == CheckerType.WHITEQUEEN)) &&
                                 !board[h - two][w - two].hasChecker();
-
                         int twocopy = two;
                         while (twocopy < 6 && !sc) {
                             if (a1 || a2 || a3 || a4) {
                                 if (newX == h + twocopy && newY == w + twocopy && h + twocopy < 8 && w + twocopy < 8 && x0 == h && y0 == w) {
+
                                     int t = 1;
                                     int cou = 0;
                                     while (t < 7 && newX >= h + t && newY >= w + t) {
@@ -214,6 +211,7 @@ public class Main extends Application {
                                         sc = true;
                                         d = 0;
                                     }
+                                    d++;
                                 } else if (newX == h + twocopy && newY == w - twocopy && h + twocopy < 8 && w - twocopy >= 0 && x0 == h && y0 == w) {
                                     int t = 1;
                                     int cou = 0;
@@ -227,6 +225,7 @@ public class Main extends Application {
                                         sc = true;
                                         d = 0;
                                     }
+                                    d++;
                                 } else if (newX == h - twocopy && newY == w + twocopy && h - twocopy >= 0 && w + twocopy < 8 && x0 == h && y0 == w) {
                                     int t = 1;
                                     int cou = 0;
@@ -240,6 +239,7 @@ public class Main extends Application {
                                         sc = true;
                                         d = 0;
                                     }
+                                    d++;
                                 } else if (newX == h - twocopy && newY == w - twocopy && h - twocopy >= 0 && w - twocopy >= 0 && x0 == h && y0 == w &&
                                         !board[newX][newY].hasChecker()) {
                                     int t = two;
@@ -254,10 +254,9 @@ public class Main extends Application {
                                         sc = true;
                                         d = 0;
                                     }
-                                }
-                                if (sc) {
                                     d++;
                                 }
+                                d++;
                             }
                             twocopy++;
                         }
@@ -399,21 +398,23 @@ public class Main extends Application {
                     board[newX][newY].setChecker(checker);
                     break;
                 case YESQUEEN:
-                    if (type == CheckerType.WHITEQUEEN){
-                        xod--;
-                    } else {
+                    if (checker.getType() == CheckerType.WHITEQUEEN) {
                         xod++;
+                    } else {
+                        xod--;
                     }
                     checker.go(newX, newY);
                     board[x0][y0].setChecker(null);
                     board[newX][newY].setChecker(checker);
                     break;
                 case KILL:
-                    if (newY == HEIGHT -1 && type == CheckerType.BLACK ){
+                    if (newY == HEIGHT - 1 && checker.getType() == CheckerType.BLACK) {
                         checker.removeTypeR();
+
                     }
-                    if (newY == 0 && type == CheckerType.WHITE){
+                    if (newY == 0 && checker.getType() == CheckerType.WHITE) {
                         checker.removeTypeW();
+
                     }
 
                     //Проверяем возможен ли еще один ход после рубки,для обычной шашки
@@ -433,7 +434,7 @@ public class Main extends Application {
                             && board[newX + 1][newY + 1].getChecker().getType() != checker.getType() &&
                             newX + 2 < 8 && newY + 2 < 8 && !board[newX + 2][newY + 2].hasChecker();
 
-                    if (checker.getType() == CheckerType.WHITE && !a4 && !a1 && !a2 && !a3) {
+                    if ((checker.getType() == CheckerType.WHITE || checker.getType() == CheckerType.WHITEQUEEN) && !a4 && !a1 && !a2 && !a3) {
                         xod++;
                     } else if (!a4 && !a1 && !a2 && !a3) {
                         xod--;
@@ -477,6 +478,7 @@ public class Main extends Application {
                                         == CheckerType.BLACKQUEEN && checker.getType() == CheckerType.WHITEQUEEN)) &&
                                 newX - two >= 0 && newY - two >= 0 && !board[newX - two][newY - two].hasChecker();
 
+
                         b2 = newX - one >= 0 && newY + one < 8 && board[newX - one][newY + one].hasChecker()
                                 && ((board[newX - one][newY + one].getChecker().getType() == CheckerType.WHITE
                                 && checker.getType() == CheckerType.BLACKQUEEN || board[newX - one][newY + one].getChecker().getType()
@@ -517,8 +519,6 @@ public class Main extends Application {
 
                     break;
             }
-            System.out.print(xod);
-            System.out.print("\n");
         });
 
         return checker;
