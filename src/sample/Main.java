@@ -67,6 +67,7 @@ public class Main extends Application {
         int count1 = 0;
         for (int h = 0; h < HEIGHT; h++) {
             for (int w = 0; w < WIDTH; w++) {
+                //Проверяем есть ли такой ход ,что шашка может срубить
                 if (board[h][w].hasChecker() && (board[h][w].getChecker().getType() == CheckerType.WHITE ||
                         board[h][w].getChecker().getType() == CheckerType.BLACK)) {
                     boolean a1 = h + 1 < 8 && w + 1 < 8 && board[h + 1][w + 1].hasChecker() &&
@@ -139,6 +140,7 @@ public class Main extends Application {
                     }
                 }
 
+                //Проверяем есть ли такой ход ,что дамка может срубить
                 int one = 1;
                 int two = 2;
                 boolean a1;
@@ -414,6 +416,7 @@ public class Main extends Application {
                         checker.removeTypeW();
                     }
 
+                    //Проверяем возможен ли еще один ход после рубки,для обычной шашки
                     boolean a1 = newX - 1 >= 0 && newY - 1 >= 0 && board[newX - 1][newY - 1].hasChecker()
                             && board[newX - 1][newY - 1].getChecker().getType() != checker.getType() &&
                             newX - 2 >= 0 && newY - 2 >= 0 && !board[newX - 2][newY - 2].hasChecker();
@@ -430,7 +433,7 @@ public class Main extends Application {
                             && board[newX + 1][newY + 1].getChecker().getType() != checker.getType() &&
                             newX + 2 < 8 && newY + 2 < 8 && !board[newX + 2][newY + 2].hasChecker();
 
-                    if (type == CheckerType.WHITE && !a4 && !a1 && !a2 && !a3) {
+                    if (checker.getType() == CheckerType.WHITE && !a4 && !a1 && !a2 && !a3) {
                         xod++;
                     } else if (!a4 && !a1 && !a2 && !a3) {
                         xod--;
@@ -455,6 +458,8 @@ public class Main extends Application {
                     otherChecker = result.getChecker();
                     board[toBoard(otherChecker.getOldX())][toBoard(otherChecker.getOldY())].setChecker(null);
                     checkerGroup.getChildren().remove(otherChecker);
+
+                    //Проверяем возможен ли еще один ход после рубки,для дамки
                     int one = 1;
                     int two = 2;
                     boolean co = false;
@@ -504,7 +509,7 @@ public class Main extends Application {
                         one++;
                         two++;
                     }
-                    if (type == CheckerType.WHITEQUEEN && !co) {
+                    if (checker.getType() == CheckerType.BLACKQUEEN && !co) {
                         xod--;
                     } else if (!co) {
                         xod++;
@@ -512,6 +517,8 @@ public class Main extends Application {
 
                     break;
             }
+            System.out.print(xod);
+            System.out.print("\n");
         });
 
         return checker;
